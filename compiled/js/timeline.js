@@ -1,11 +1,3 @@
-/*
-    TimelineJS - ver. 2017-03-31-15-29-59 - 2017-03-31
-    Copyright (c) 2012-2016 Northwestern University
-    a project of the Northwestern University Knight Lab, originally created by Zach Wise
-    https://github.com/NUKnightLab/TimelineJS3
-    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-    If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-*/
 
 /* **********************************************
      Begin TL.js
@@ -15,13 +7,14 @@
 	TL
 */
 
-(function (root) {
-	root.TL = {
-		VERSION: '0.1',
-		_originalL: root.TL
-	};
+(function(root) {
+    root.TL = {
+        VERSION: '0.1',
+        _originalL: root.TL
+    };
 }(this));
 
+var TL = this.TL || window.TL;
 /*	TL.Debug
 	Debug mode
 ================================================== */
@@ -31,28 +24,27 @@ TL.debug = false;
 
 /*	TL.Bind
 ================================================== */
-TL.Bind = function (/*Function*/ fn, /*Object*/ obj) /*-> Object*/ {
-	return function () {
-		return fn.apply(obj, arguments);
-	};
+TL.Bind = function( /*Function*/ fn, /*Object*/ obj) /*-> Object*/ {
+    return function() {
+        return fn.apply(obj, arguments);
+    };
 };
 
 
 
 /* Trace (console.log)
 ================================================== */
-trace = function( msg ) {
-	if (TL.debug) {
-		if (window.console) {
-			console.log(msg);
-		} else if ( typeof( jsTrace ) != 'undefined' ) {
-			jsTrace.send( msg );
-		} else {
-			//alert(msg);
-		}
-	}
+trace = function(msg) {
+    if (TL.debug) {
+        if (window.console) {
+            console.log(msg);
+        } else if (typeof(jsTrace) != 'undefined') {
+            jsTrace.send(msg);
+        } else {
+            //alert(msg);
+        }
+    }
 }
-
 
 /* **********************************************
      Begin TL.Error.js
@@ -253,6 +245,11 @@ TL.Util = {
 		} else {
 			return "<p>" + str + "</p>";
 		}
+	},
+
+	unhtmlify: function(str) {
+		str = str.replace(/(<[^>]*>)+/g, '');
+		return str.replace('"', "'");
 	},
 
 	/*	* Turns plain text links into real links
@@ -2530,82 +2527,86 @@ TL.Events.fire = TL.Events.fireEvent;
 
 (function() {
 
-	var ua = navigator.userAgent.toLowerCase(),
-		doc = document.documentElement,
+    var ua = navigator.userAgent.toLowerCase(),
+        doc = document.documentElement,
 
-		ie = 'ActiveXObject' in window,
+        ie = 'ActiveXObject' in window,
 
-		webkit = ua.indexOf('webkit') !== -1,
-		phantomjs = ua.indexOf('phantom') !== -1,
-		android23 = ua.search('android [23]') !== -1,
+        webkit = ua.indexOf('webkit') !== -1,
+        phantomjs = ua.indexOf('phantom') !== -1,
+        android23 = ua.search('android [23]') !== -1,
 
-		mobile = typeof orientation !== 'undefined',
-		msPointer = navigator.msPointerEnabled && navigator.msMaxTouchPoints && !window.PointerEvent,
-		pointer = (window.PointerEvent && navigator.pointerEnabled && navigator.maxTouchPoints) || msPointer,
+        mobile = typeof orientation !== 'undefined',
+        msPointer = navigator.msPointerEnabled && navigator.msMaxTouchPoints && !window.PointerEvent,
+        pointer = (window.PointerEvent && navigator.pointerEnabled && navigator.maxTouchPoints) || msPointer,
 
-		ie3d = ie && ('transition' in doc.style),
-		webkit3d = ('WebKitCSSMatrix' in window) && ('m11' in new window.WebKitCSSMatrix()) && !android23,
-		gecko3d = 'MozPerspective' in doc.style,
-		opera3d = 'OTransition' in doc.style,
-		opera = window.opera;
+        ie3d = ie && ('transition' in doc.style),
+        webkit3d = ('WebKitCSSMatrix' in window) && ('m11' in new window.WebKitCSSMatrix()) && !android23,
+        gecko3d = 'MozPerspective' in doc.style,
+        opera3d = 'OTransition' in doc.style,
+        opera = window.opera;
 
 
-	var retina = 'devicePixelRatio' in window && window.devicePixelRatio > 1;
+    var retina;
+    try {
+        retina = 'devicePixelRatio' in window && window.devicePixelRatio > 1;
+    } catch (e) {
+        console.warn(e);
+    }
 
-	if (!retina && 'matchMedia' in window) {
-		var matches = window.matchMedia('(min-resolution:144dpi)');
-		retina = matches && matches.matches;
-	}
+    if (!retina && 'matchMedia' in window) {
+        var matches = window.matchMedia('(min-resolution:144dpi)');
+        retina = matches && matches.matches;
+    }
 
-	var touch = !window.L_NO_TOUCH && !phantomjs && (pointer || 'ontouchstart' in window || (window.DocumentTouch && document instanceof window.DocumentTouch));
+    var touch = !window.L_NO_TOUCH && !phantomjs && (pointer || 'ontouchstart' in window || (window.DocumentTouch && document instanceof window.DocumentTouch));
 
-	TL.Browser = {
-		ie: ie,
-		ua: ua,
-		ie9: Boolean(ie && ua.match(/MSIE 9/i)),
-		ielt9: ie && !document.addEventListener,
-		webkit: webkit,
-		//gecko: (ua.indexOf('gecko') !== -1) && !webkit && !window.opera && !ie,
-		firefox: (ua.indexOf('gecko') !== -1) && !webkit && !window.opera && !ie,
-		android: ua.indexOf('android') !== -1,
-		android23: android23,
-		chrome: ua.indexOf('chrome') !== -1,
-		edge: ua.indexOf('edge/') !== -1,
+    TL.Browser = {
+        ie: ie,
+        ua: ua,
+        ie9: Boolean(ie && ua.match(/MSIE 9/i)),
+        ielt9: ie && !document.addEventListener,
+        webkit: webkit,
+        //gecko: (ua.indexOf('gecko') !== -1) && !webkit && !window.opera && !ie,
+        firefox: (ua.indexOf('gecko') !== -1) && !webkit && !window.opera && !ie,
+        android: ua.indexOf('android') !== -1,
+        android23: android23,
+        chrome: ua.indexOf('chrome') !== -1,
+        edge: ua.indexOf('edge/') !== -1,
 
-		ie3d: ie3d,
-		webkit3d: webkit3d,
-		gecko3d: gecko3d,
-		opera3d: opera3d,
-		any3d: !window.L_DISABLE_3D && (ie3d || webkit3d || gecko3d || opera3d) && !phantomjs,
+        ie3d: ie3d,
+        webkit3d: webkit3d,
+        gecko3d: gecko3d,
+        opera3d: opera3d,
+        any3d: !window.L_DISABLE_3D && (ie3d || webkit3d || gecko3d || opera3d) && !phantomjs,
 
-		mobile: mobile,
-		mobileWebkit: mobile && webkit,
-		mobileWebkit3d: mobile && webkit3d,
-		mobileOpera: mobile && window.opera,
+        mobile: mobile,
+        mobileWebkit: mobile && webkit,
+        mobileWebkit3d: mobile && webkit3d,
+        mobileOpera: mobile && window.opera,
 
-		touch: !! touch,
-		msPointer: !! msPointer,
-		pointer: !! pointer,
+        touch: !!touch,
+        msPointer: !!msPointer,
+        pointer: !!pointer,
 
-		retina: !! retina,
-		orientation: function() {
-			var w = window.innerWidth,
-				h = window.innerHeight,
-				_orientation = "portrait";
+        retina: !!retina,
+        orientation: function() {
+            var w = window.innerWidth,
+                h = window.innerHeight,
+                _orientation = "portrait";
 
-			if (w > h) {
-				_orientation = "landscape";
-			}
-			if (Math.abs(window.orientation) == 90) {
-				//_orientation = "landscape";
-			}
-			trace(_orientation);
-			return _orientation;
-		}
-	};
+            if (w > h) {
+                _orientation = "landscape";
+            }
+            if (Math.abs(window.orientation) == 90) {
+                //_orientation = "landscape";
+            }
+            trace(_orientation);
+            return _orientation;
+        }
+    };
 
 }());
-
 
 /* **********************************************
      Begin TL.Load.js
@@ -4269,9 +4270,9 @@ Math.easeInOutExpo = function (t, b, c, d) {
 ================================================== */
 
 TL.Animate = function(el, options) {
-	var animation = new tlanimate(el, options),
-		webkit_timeout;
-		/*
+    var animation = new tlanimate(el, options),
+        webkit_timeout;
+    /*
 		// POSSIBLE ISSUE WITH WEBKIT FUTURE BUILDS
 	var onWebKitTimeout = function() {
 
@@ -4281,7 +4282,7 @@ TL.Animate = function(el, options) {
 		webkit_timeout = setTimeout(function(){onWebKitTimeout()}, options.duration);
 	}
 	*/
-	return animation;
+    return animation;
 };
 
 
@@ -4291,410 +4292,417 @@ TL.Animate = function(el, options) {
 ================================================== */
 window.tlanimate = (function() {
 
-	var doc = document,
-		win = window,
-		perf = win.performance,
-		perfNow = perf && (perf.now || perf.webkitNow || perf.msNow || perf.mozNow),
-		now = perfNow ? function () { return perfNow.call(perf) } : function () { return +new Date() },
-		html = doc.documentElement,
-		fixTs = false, // feature detected below
-		thousand = 1000,
-		rgbOhex = /^rgb\(|#/,
-		relVal = /^([+\-])=([\d\.]+)/,
-		numUnit = /^(?:[\+\-]=?)?\d+(?:\.\d+)?(%|in|cm|mm|em|ex|pt|pc|px)$/,
-		rotate = /rotate\(((?:[+\-]=)?([\-\d\.]+))deg\)/,
-		scale = /scale\(((?:[+\-]=)?([\d\.]+))\)/,
-		skew = /skew\(((?:[+\-]=)?([\-\d\.]+))deg, ?((?:[+\-]=)?([\-\d\.]+))deg\)/,
-		translate = /translate\(((?:[+\-]=)?([\-\d\.]+))px, ?((?:[+\-]=)?([\-\d\.]+))px\)/,
-		// these elements do not require 'px'
-		unitless = { lineHeight: 1, zoom: 1, zIndex: 1, opacity: 1, transform: 1};
+    var doc = document,
+        win = window,
+        perf = win.performance,
+        perfNow = perf && (perf.now || perf.webkitNow || perf.msNow || perf.mozNow),
+        now = perfNow ? function() { return perfNow.call(perf) } : function() { return +new Date() },
+        html = doc.documentElement,
+        fixTs = false, // feature detected below
+        thousand = 1000,
+        rgbOhex = /^rgb\(|#/,
+        relVal = /^([+\-])=([\d\.]+)/,
+        numUnit = /^(?:[\+\-]=?)?\d+(?:\.\d+)?(%|in|cm|mm|em|ex|pt|pc|px)$/,
+        rotate = /rotate\(((?:[+\-]=)?([\-\d\.]+))deg\)/,
+        scale = /scale\(((?:[+\-]=)?([\d\.]+))\)/,
+        skew = /skew\(((?:[+\-]=)?([\-\d\.]+))deg, ?((?:[+\-]=)?([\-\d\.]+))deg\)/,
+        translate = /translate\(((?:[+\-]=)?([\-\d\.]+))px, ?((?:[+\-]=)?([\-\d\.]+))px\)/,
+        // these elements do not require 'px'
+        unitless = { lineHeight: 1, zoom: 1, zIndex: 1, opacity: 1, transform: 1 };
 
-  // which property name does this browser use for transform
-	var transform = function () {
-		var styles = doc.createElement('a').style,
-			props = ['webkitTransform', 'MozTransform', 'OTransform', 'msTransform', 'Transform'],
-			i;
+    // which property name does this browser use for transform
+    var transform = function() {
+        var styles = doc.createElement('a').style,
+            props = ['webkitTransform', 'MozTransform', 'OTransform', 'msTransform', 'Transform'],
+            i;
 
-		for (i = 0; i < props.length; i++) {
-			if (props[i] in styles) return props[i]
-		};
-	}();
+        for (i = 0; i < props.length; i++) {
+            if (props[i] in styles) return props[i]
+        };
+    }();
 
-	// does this browser support the opacity property?
-	var opacity = function () {
-		return typeof doc.createElement('a').style.opacity !== 'undefined'
-	}();
+    // does this browser support the opacity property?
+    var opacity = function() {
+        return typeof doc.createElement('a').style.opacity !== 'undefined'
+    }();
 
-	// initial style is determined by the elements themselves
-	var getStyle = doc.defaultView && doc.defaultView.getComputedStyle ?
-	function (el, property) {
-		property = property == 'transform' ? transform : property
-		property = camelize(property)
-		var value = null,
-			computed = doc.defaultView.getComputedStyle(el, '');
+    // initial style is determined by the elements themselves
+    var getStyle = doc.defaultView && doc.defaultView.getComputedStyle ?
+        function(el, property) {
+            property = property == 'transform' ? transform : property
+            property = camelize(property)
+            var value = null,
+                computed = doc.defaultView.getComputedStyle(el, '');
 
-		computed && (value = computed[property]);
-		return el.style[property] || value;
-	} : html.currentStyle ?
+            computed && (value = computed[property]);
+            return el.style[property] || value;
+        } : html.currentStyle ?
 
-    function (el, property) {
-		property = camelize(property)
+        function(el, property) {
+            property = camelize(property)
 
-		if (property == 'opacity') {
-			var val = 100
-			try {
-				val = el.filters['DXImageTransform.Microsoft.Alpha'].opacity
-			} catch (e1) {
-				try {
-					val = el.filters('alpha').opacity
-				} catch (e2) {
+            if (property == 'opacity') {
+                var val = 100
+                try {
+                    val = el.filters['DXImageTransform.Microsoft.Alpha'].opacity
+                } catch (e1) {
+                    try {
+                        val = el.filters('alpha').opacity
+                    } catch (e2) {
 
-				}
-			}
-			return val / 100
-		}
-		var value = el.currentStyle ? el.currentStyle[property] : null
-		return el.style[property] || value
-	} :
+                    }
+                }
+                return val / 100
+            }
+            var value = el.currentStyle ? el.currentStyle[property] : null
+            return el.style[property] || value
+        } :
 
-    function (el, property) {
-		return el.style[camelize(property)]
-    }
+        function(el, property) {
+            return el.style[camelize(property)]
+        }
 
-  var frame = function () {
-    // native animation frames
-    // http://webstuff.nfshost.com/anim-timing/Overview.html
-    // http://dev.chromium.org/developers/design-documents/requestanimationframe-implementation
-    return win.requestAnimationFrame  ||
-      win.webkitRequestAnimationFrame ||
-      win.mozRequestAnimationFrame    ||
-      win.msRequestAnimationFrame     ||
-      win.oRequestAnimationFrame      ||
-      function (callback) {
-        win.setTimeout(function () {
-          callback(+new Date())
-        }, 17) // when I was 17..
-      }
-  }()
+    var frame = function() {
+        // native animation frames
+        // http://webstuff.nfshost.com/anim-timing/Overview.html
+        // http://dev.chromium.org/developers/design-documents/requestanimationframe-implementation
+        return win.requestAnimationFrame ||
+            win.webkitRequestAnimationFrame ||
+            win.mozRequestAnimationFrame ||
+            win.msRequestAnimationFrame ||
+            win.oRequestAnimationFrame ||
+            function(callback) {
+                win.setTimeout(function() {
+                        callback(+new Date())
+                    }, 17) // when I was 17..
+            }
+    }()
 
-  var children = []
+    var children = []
 
-	frame(function(timestamp) {
-	  	// feature-detect if rAF and now() are of the same scale (epoch or high-res),
-		// if not, we have to do a timestamp fix on each frame
-		fixTs = timestamp > 1e12 != now() > 1e12
-	})
-
-  function has(array, elem, i) {
-    if (Array.prototype.indexOf) return array.indexOf(elem)
-    for (i = 0; i < array.length; ++i) {
-      if (array[i] === elem) return i
-    }
-  }
-
-  function render(timestamp) {
-    var i, count = children.length
-    // if we're using a high res timer, make sure timestamp is not the old epoch-based value.
-    // http://updates.html5rocks.com/2012/05/requestAnimationFrame-API-now-with-sub-millisecond-precision
-    if (perfNow && timestamp > 1e12) timestamp = now()
-	if (fixTs) timestamp = now()
-    for (i = count; i--;) {
-      children[i](timestamp)
-    }
-    children.length && frame(render)
-  }
-
-  function live(f) {
-    if (children.push(f) === 1) frame(render)
-  }
-
-  function die(f) {
-    var rest, index = has(children, f)
-    if (index >= 0) {
-      rest = children.slice(index + 1)
-      children.length = index
-      children = children.concat(rest)
-    }
-  }
-
-  function parseTransform(style, base) {
-    var values = {}, m
-    if (m = style.match(rotate)) values.rotate = by(m[1], base ? base.rotate : null)
-    if (m = style.match(scale)) values.scale = by(m[1], base ? base.scale : null)
-    if (m = style.match(skew)) {values.skewx = by(m[1], base ? base.skewx : null); values.skewy = by(m[3], base ? base.skewy : null)}
-    if (m = style.match(translate)) {values.translatex = by(m[1], base ? base.translatex : null); values.translatey = by(m[3], base ? base.translatey : null)}
-    return values
-  }
-
-  function formatTransform(v) {
-    var s = ''
-    if ('rotate' in v) s += 'rotate(' + v.rotate + 'deg) '
-    if ('scale' in v) s += 'scale(' + v.scale + ') '
-    if ('translatex' in v) s += 'translate(' + v.translatex + 'px,' + v.translatey + 'px) '
-    if ('skewx' in v) s += 'skew(' + v.skewx + 'deg,' + v.skewy + 'deg)'
-    return s
-  }
-
-  function rgb(r, g, b) {
-    return '#' + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1)
-  }
-
-  // convert rgb and short hex to long hex
-  function toHex(c) {
-    var m = c.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/)
-    return (m ? rgb(m[1], m[2], m[3]) : c)
-      .replace(/#(\w)(\w)(\w)$/, '#$1$1$2$2$3$3') // short skirt to long jacket
-  }
-
-  // change font-size => fontSize etc.
-  function camelize(s) {
-    return s.replace(/-(.)/g, function (m, m1) {
-      return m1.toUpperCase()
+    frame(function(timestamp) {
+        // feature-detect if rAF and now() are of the same scale (epoch or high-res),
+        // if not, we have to do a timestamp fix on each frame
+        fixTs = timestamp > 1e12 != now() > 1e12
     })
-  }
 
-  // aren't we having it?
-  function fun(f) {
-    return typeof f == 'function'
-  }
-
-  function nativeTween(t) {
-    // default to a pleasant-to-the-eye easeOut (like native animations)
-    return Math.sin(t * Math.PI / 2)
-  }
-
-  /**
-    * Core tween method that requests each frame
-    * @param duration: time in milliseconds. defaults to 1000
-    * @param fn: tween frame callback function receiving 'position'
-    * @param done {optional}: complete callback function
-    * @param ease {optional}: easing method. defaults to easeOut
-    * @param from {optional}: integer to start from
-    * @param to {optional}: integer to end at
-    * @returns method to stop the animation
-    */
-  function tween(duration, fn, done, ease, from, to) {
-    ease = fun(ease) ? ease : morpheus.easings[ease] || nativeTween
-    var time = duration || thousand
-      , self = this
-      , diff = to - from
-      , start = now()
-      , stop = 0
-      , end = 0
-
-    function run(t) {
-      var delta = t - start
-      if (delta > time || stop) {
-        to = isFinite(to) ? to : 1
-        stop ? end && fn(to) : fn(to)
-        die(run)
-        return done && done.apply(self)
-      }
-      // if you don't specify a 'to' you can use tween as a generic delta tweener
-      // cool, eh?
-      isFinite(to) ?
-        fn((diff * ease(delta / time)) + from) :
-        fn(ease(delta / time))
-    }
-
-    live(run)
-
-    return {
-      stop: function (jump) {
-        stop = 1
-        end = jump // jump to end of animation?
-        if (!jump) done = null // remove callback if not jumping to end
-      }
-    }
-  }
-
-  /**
-    * generic bezier method for animating x|y coordinates
-    * minimum of 2 points required (start and end).
-    * first point start, last point end
-    * additional control points are optional (but why else would you use this anyway ;)
-    * @param points: array containing control points
-       [[0, 0], [100, 200], [200, 100]]
-    * @param pos: current be(tween) position represented as float  0 - 1
-    * @return [x, y]
-    */
-  function bezier(points, pos) {
-    var n = points.length, r = [], i, j
-    for (i = 0; i < n; ++i) {
-      r[i] = [points[i][0], points[i][1]]
-    }
-    for (j = 1; j < n; ++j) {
-      for (i = 0; i < n - j; ++i) {
-        r[i][0] = (1 - pos) * r[i][0] + pos * r[parseInt(i + 1, 10)][0]
-        r[i][1] = (1 - pos) * r[i][1] + pos * r[parseInt(i + 1, 10)][1]
-      }
-    }
-    return [r[0][0], r[0][1]]
-  }
-
-  // this gets you the next hex in line according to a 'position'
-  function nextColor(pos, start, finish) {
-    var r = [], i, e, from, to
-    for (i = 0; i < 6; i++) {
-      from = Math.min(15, parseInt(start.charAt(i),  16))
-      to   = Math.min(15, parseInt(finish.charAt(i), 16))
-      e = Math.floor((to - from) * pos + from)
-      e = e > 15 ? 15 : e < 0 ? 0 : e
-      r[i] = e.toString(16)
-    }
-    return '#' + r.join('')
-  }
-
-  // this retreives the frame value within a sequence
-  function getTweenVal(pos, units, begin, end, k, i, v) {
-    if (k == 'transform') {
-      v = {}
-      for (var t in begin[i][k]) {
-        v[t] = (t in end[i][k]) ? Math.round(((end[i][k][t] - begin[i][k][t]) * pos + begin[i][k][t]) * thousand) / thousand : begin[i][k][t]
-      }
-      return v
-    } else if (typeof begin[i][k] == 'string') {
-      return nextColor(pos, begin[i][k], end[i][k])
-    } else {
-      // round so we don't get crazy long floats
-      v = Math.round(((end[i][k] - begin[i][k]) * pos + begin[i][k]) * thousand) / thousand
-      // some css properties don't require a unit (like zIndex, lineHeight, opacity)
-      if (!(k in unitless)) v += units[i][k] || 'px'
-      return v
-    }
-  }
-
-  // support for relative movement via '+=n' or '-=n'
-  function by(val, start, m, r, i) {
-    return (m = relVal.exec(val)) ?
-      (i = parseFloat(m[2])) && (start + (m[1] == '+' ? 1 : -1) * i) :
-      parseFloat(val)
-  }
-
-  /**
-    * morpheus:
-    * @param element(s): HTMLElement(s)
-    * @param options: mixed bag between CSS Style properties & animation options
-    *  - {n} CSS properties|values
-    *     - value can be strings, integers,
-    *     - or callback function that receives element to be animated. method must return value to be tweened
-    *     - relative animations start with += or -= followed by integer
-    *  - duration: time in ms - defaults to 1000(ms)
-    *  - easing: a transition method - defaults to an 'easeOut' algorithm
-    *  - complete: a callback method for when all elements have finished
-    *  - bezier: array of arrays containing x|y coordinates that define the bezier points. defaults to none
-    *     - this may also be a function that receives element to be animated. it must return a value
-    */
-  function morpheus(elements, options) {
-    var els = elements ? (els = isFinite(elements.length) ? elements : [elements]) : [], i
-      , complete = options.complete
-      , duration = options.duration
-      , ease = options.easing
-      , points = options.bezier
-      , begin = []
-      , end = []
-      , units = []
-      , bez = []
-      , originalLeft
-      , originalTop
-
-    if (points) {
-      // remember the original values for top|left
-      originalLeft = options.left;
-      originalTop = options.top;
-      delete options.right;
-      delete options.bottom;
-      delete options.left;
-      delete options.top;
-    }
-
-    for (i = els.length; i--;) {
-
-      // record beginning and end states to calculate positions
-      begin[i] = {}
-      end[i] = {}
-      units[i] = {}
-
-      // are we 'moving'?
-      if (points) {
-
-        var left = getStyle(els[i], 'left')
-          , top = getStyle(els[i], 'top')
-          , xy = [by(fun(originalLeft) ? originalLeft(els[i]) : originalLeft || 0, parseFloat(left)),
-                  by(fun(originalTop) ? originalTop(els[i]) : originalTop || 0, parseFloat(top))]
-
-        bez[i] = fun(points) ? points(els[i], xy) : points
-        bez[i].push(xy)
-        bez[i].unshift([
-          parseInt(left, 10),
-          parseInt(top, 10)
-        ])
-      }
-
-      for (var k in options) {
-        switch (k) {
-        case 'complete':
-        case 'duration':
-        case 'easing':
-        case 'bezier':
-          continue
+    function has(array, elem, i) {
+        if (Array.prototype.indexOf) return array.indexOf(elem)
+        for (i = 0; i < array.length; ++i) {
+            if (array[i] === elem) return i
         }
-        var v = getStyle(els[i], k), unit
-          , tmp = fun(options[k]) ? options[k](els[i]) : options[k]
-        if (typeof tmp == 'string' &&
-            rgbOhex.test(tmp) &&
-            !rgbOhex.test(v)) {
-          delete options[k]; // remove key :(
-          continue; // cannot animate colors like 'orange' or 'transparent'
-                    // only #xxx, #xxxxxx, rgb(n,n,n)
+    }
+
+    function render(timestamp) {
+        var i, count = children.length
+            // if we're using a high res timer, make sure timestamp is not the old epoch-based value.
+            // http://updates.html5rocks.com/2012/05/requestAnimationFrame-API-now-with-sub-millisecond-precision
+        if (perfNow && timestamp > 1e12) timestamp = now()
+        if (fixTs) timestamp = now()
+        for (i = count; i--;) {
+            children[i](timestamp)
+        }
+        children.length && frame(render)
+    }
+
+    function live(f) {
+        if (children.push(f) === 1) frame(render)
+    }
+
+    function die(f) {
+        var rest, index = has(children, f)
+        if (index >= 0) {
+            rest = children.slice(index + 1)
+            children.length = index
+            children = children.concat(rest)
+        }
+    }
+
+    function parseTransform(style, base) {
+        var values = {},
+            m
+        if (m = style.match(rotate)) values.rotate = by(m[1], base ? base.rotate : null)
+        if (m = style.match(scale)) values.scale = by(m[1], base ? base.scale : null)
+        if (m = style.match(skew)) { values.skewx = by(m[1], base ? base.skewx : null);
+            values.skewy = by(m[3], base ? base.skewy : null) }
+        if (m = style.match(translate)) { values.translatex = by(m[1], base ? base.translatex : null);
+            values.translatey = by(m[3], base ? base.translatey : null) }
+        return values
+    }
+
+    function formatTransform(v) {
+        var s = ''
+        if ('rotate' in v) s += 'rotate(' + v.rotate + 'deg) '
+        if ('scale' in v) s += 'scale(' + v.scale + ') '
+        if ('translatex' in v) s += 'translate(' + v.translatex + 'px,' + v.translatey + 'px) '
+        if ('skewx' in v) s += 'skew(' + v.skewx + 'deg,' + v.skewy + 'deg)'
+        return s
+    }
+
+    function rgb(r, g, b) {
+        return '#' + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1)
+    }
+
+    // convert rgb and short hex to long hex
+    function toHex(c) {
+        var m = c.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/)
+        return (m ? rgb(m[1], m[2], m[3]) : c)
+            .replace(/#(\w)(\w)(\w)$/, '#$1$1$2$2$3$3') // short skirt to long jacket
+    }
+
+    // change font-size => fontSize etc.
+    function camelize(s) {
+        return s.replace(/-(.)/g, function(m, m1) {
+            return m1.toUpperCase()
+        })
+    }
+
+    // aren't we having it?
+    function fun(f) {
+        return typeof f == 'function'
+    }
+
+    function nativeTween(t) {
+        // default to a pleasant-to-the-eye easeOut (like native animations)
+        return Math.sin(t * Math.PI / 2)
+    }
+
+    /**
+     * Core tween method that requests each frame
+     * @param duration: time in milliseconds. defaults to 1000
+     * @param fn: tween frame callback function receiving 'position'
+     * @param done {optional}: complete callback function
+     * @param ease {optional}: easing method. defaults to easeOut
+     * @param from {optional}: integer to start from
+     * @param to {optional}: integer to end at
+     * @returns method to stop the animation
+     */
+    function tween(duration, fn, done, ease, from, to) {
+        ease = fun(ease) ? ease : morpheus.easings[ease] || nativeTween
+        var time = duration || thousand,
+            self = this,
+            diff = to - from,
+            start = now(),
+            stop = 0,
+            end = 0
+
+        function run(t) {
+            var delta = t - start
+            if (delta > time || stop) {
+                to = isFinite(to) ? to : 1
+                stop ? end && fn(to) : fn(to)
+                die(run)
+                return done && done.apply(self)
+            }
+            // if you don't specify a 'to' you can use tween as a generic delta tweener
+            // cool, eh?
+            isFinite(to) ?
+                fn((diff * ease(delta / time)) + from) :
+                fn(ease(delta / time))
         }
 
-        begin[i][k] = k == 'transform' ? parseTransform(v) :
-          typeof tmp == 'string' && rgbOhex.test(tmp) ?
-            toHex(v).slice(1) :
-            parseFloat(v)
-        end[i][k] = k == 'transform' ? parseTransform(tmp, begin[i][k]) :
-          typeof tmp == 'string' && tmp.charAt(0) == '#' ?
-            toHex(tmp).slice(1) :
-            by(tmp, parseFloat(v));
-        // record original unit
-        (typeof tmp == 'string') && (unit = tmp.match(numUnit)) && (units[i][k] = unit[1])
-      }
+        live(run)
+
+        return {
+            stop: function(jump) {
+                stop = 1
+                end = jump // jump to end of animation?
+                if (!jump) done = null // remove callback if not jumping to end
+            }
+        }
     }
-    // ONE TWEEN TO RULE THEM ALL
-    return tween.apply(els, [duration, function (pos, v, xy) {
-      // normally not a fan of optimizing for() loops, but we want something
-      // fast for animating
-      for (i = els.length; i--;) {
+
+    /**
+      * generic bezier method for animating x|y coordinates
+      * minimum of 2 points required (start and end).
+      * first point start, last point end
+      * additional control points are optional (but why else would you use this anyway ;)
+      * @param points: array containing control points
+         [[0, 0], [100, 200], [200, 100]]
+      * @param pos: current be(tween) position represented as float  0 - 1
+      * @return [x, y]
+      */
+    function bezier(points, pos) {
+        var n = points.length,
+            r = [],
+            i, j
+        for (i = 0; i < n; ++i) {
+            r[i] = [points[i][0], points[i][1]]
+        }
+        for (j = 1; j < n; ++j) {
+            for (i = 0; i < n - j; ++i) {
+                r[i][0] = (1 - pos) * r[i][0] + pos * r[parseInt(i + 1, 10)][0]
+                r[i][1] = (1 - pos) * r[i][1] + pos * r[parseInt(i + 1, 10)][1]
+            }
+        }
+        return [r[0][0], r[0][1]]
+    }
+
+    // this gets you the next hex in line according to a 'position'
+    function nextColor(pos, start, finish) {
+        var r = [],
+            i, e, from, to
+        for (i = 0; i < 6; i++) {
+            from = Math.min(15, parseInt(start.charAt(i), 16))
+            to = Math.min(15, parseInt(finish.charAt(i), 16))
+            e = Math.floor((to - from) * pos + from)
+            e = e > 15 ? 15 : e < 0 ? 0 : e
+            r[i] = e.toString(16)
+        }
+        return '#' + r.join('')
+    }
+
+    // this retreives the frame value within a sequence
+    function getTweenVal(pos, units, begin, end, k, i, v) {
+        if (k == 'transform') {
+            v = {}
+            for (var t in begin[i][k]) {
+                v[t] = (t in end[i][k]) ? Math.round(((end[i][k][t] - begin[i][k][t]) * pos + begin[i][k][t]) * thousand) / thousand : begin[i][k][t]
+            }
+            return v
+        } else if (typeof begin[i][k] == 'string') {
+            return nextColor(pos, begin[i][k], end[i][k])
+        } else {
+            // round so we don't get crazy long floats
+            v = Math.round(((end[i][k] - begin[i][k]) * pos + begin[i][k]) * thousand) / thousand
+                // some css properties don't require a unit (like zIndex, lineHeight, opacity)
+            if (!(k in unitless)) v += units[i][k] || 'px'
+            return v
+        }
+    }
+
+    // support for relative movement via '+=n' or '-=n'
+    function by(val, start, m, r, i) {
+        return (m = relVal.exec(val)) ?
+            (i = parseFloat(m[2])) && (start + (m[1] == '+' ? 1 : -1) * i) :
+            parseFloat(val)
+    }
+
+    /**
+     * morpheus:
+     * @param element(s): HTMLElement(s)
+     * @param options: mixed bag between CSS Style properties & animation options
+     *  - {n} CSS properties|values
+     *     - value can be strings, integers,
+     *     - or callback function that receives element to be animated. method must return value to be tweened
+     *     - relative animations start with += or -= followed by integer
+     *  - duration: time in ms - defaults to 1000(ms)
+     *  - easing: a transition method - defaults to an 'easeOut' algorithm
+     *  - complete: a callback method for when all elements have finished
+     *  - bezier: array of arrays containing x|y coordinates that define the bezier points. defaults to none
+     *     - this may also be a function that receives element to be animated. it must return a value
+     */
+    function morpheus(elements, options) {
+        var els = elements ? (els = isFinite(elements.length) ? elements : [elements]) : [],
+            i, complete = options.complete,
+            duration = options.duration,
+            ease = options.easing,
+            points = options.bezier,
+            begin = [],
+            end = [],
+            units = [],
+            bez = [],
+            originalLeft, originalTop
+
         if (points) {
-          xy = bezier(bez[i], pos)
-          els[i].style.left = xy[0] + 'px'
-          els[i].style.top = xy[1] + 'px'
+            // remember the original values for top|left
+            originalLeft = options.left;
+            originalTop = options.top;
+            delete options.right;
+            delete options.bottom;
+            delete options.left;
+            delete options.top;
         }
-        for (var k in options) {
-          v = getTweenVal(pos, units, begin, end, k, i)
-          k == 'transform' ?
-            els[i].style[transform] = formatTransform(v) :
-            k == 'opacity' && !opacity ?
-              (els[i].style.filter = 'alpha(opacity=' + (v * 100) + ')') :
-              (els[i].style[camelize(k)] = v)
+
+        for (i = els.length; i--;) {
+
+            // record beginning and end states to calculate positions
+            begin[i] = {}
+            end[i] = {}
+            units[i] = {}
+
+            // are we 'moving'?
+            if (points) {
+
+                var left = getStyle(els[i], 'left'),
+                    top = getStyle(els[i], 'top'),
+                    xy = [by(fun(originalLeft) ? originalLeft(els[i]) : originalLeft || 0, parseFloat(left)),
+                        by(fun(originalTop) ? originalTop(els[i]) : originalTop || 0, parseFloat(top))
+                    ]
+
+                bez[i] = fun(points) ? points(els[i], xy) : points
+                bez[i].push(xy)
+                bez[i].unshift([
+                    parseInt(left, 10),
+                    parseInt(top, 10)
+                ])
+            }
+
+            for (var k in options) {
+                switch (k) {
+                    case 'complete':
+                    case 'duration':
+                    case 'easing':
+                    case 'bezier':
+                        continue
+                }
+                var v = getStyle(els[i], k),
+                    unit, tmp = fun(options[k]) ? options[k](els[i]) : options[k]
+                if (typeof tmp == 'string' &&
+                    rgbOhex.test(tmp) &&
+                    !rgbOhex.test(v)) {
+                    delete options[k]; // remove key :(
+                    continue; // cannot animate colors like 'orange' or 'transparent'
+                    // only #xxx, #xxxxxx, rgb(n,n,n)
+                }
+
+                begin[i][k] = k == 'transform' ? parseTransform(v) :
+                    typeof tmp == 'string' && rgbOhex.test(tmp) ?
+                    toHex(v).slice(1) :
+                    parseFloat(v)
+                end[i][k] = k == 'transform' ? parseTransform(tmp, begin[i][k]) :
+                    typeof tmp == 'string' && tmp.charAt(0) == '#' ?
+                    toHex(tmp).slice(1) :
+                    by(tmp, parseFloat(v));
+                // record original unit
+                (typeof tmp == 'string') && (unit = tmp.match(numUnit)) && (units[i][k] = unit[1])
+            }
         }
-      }
-    }, complete, ease])
-  }
+        // ONE TWEEN TO RULE THEM ALL
+        return tween.apply(els, [duration, function(pos, v, xy) {
+            // normally not a fan of optimizing for() loops, but we want something
+            // fast for animating
+            for (i = els.length; i--;) {
+                if (points) {
+                    xy = bezier(bez[i], pos)
+                    els[i].style.left = xy[0] + 'px'
+                    els[i].style.top = xy[1] + 'px'
+                }
+                for (var k in options) {
+                    v = getTweenVal(pos, units, begin, end, k, i)
+                    k == 'transform' ?
+                        els[i].style[transform] = formatTransform(v) :
+                        k == 'opacity' && !opacity ?
+                        (els[i].style.filter = 'alpha(opacity=' + (v * 100) + ')') :
+                        (els[i].style[camelize(k)] = v)
+                }
+            }
+        }, complete, ease])
+    }
 
-  // expose useful methods
-  morpheus.tween = tween
-  morpheus.getStyle = getStyle
-  morpheus.bezier = bezier
-  morpheus.transform = transform
-  morpheus.parseTransform = parseTransform
-  morpheus.formatTransform = formatTransform
-  morpheus.easings = {}
+    // expose useful methods
+    morpheus.tween = tween
+    morpheus.getStyle = getStyle
+    morpheus.bezier = bezier
+    morpheus.transform = transform
+    morpheus.parseTransform = parseTransform
+    morpheus.formatTransform = formatTransform
+    morpheus.easings = {}
 
-  return morpheus
+    return morpheus
 })();
 
+var tlanimate = this.tlanimate || window.tlanimate;
 
 /* **********************************************
      Begin TL.Point.js
@@ -6886,7 +6894,7 @@ TL.Message = TL.Class.extend({
 	You can add new media types by adding a regex
 	to match and the media class name to use to
 	render the media
-	
+
 	The image_only parameter indicates that the
 	call only wants an image-based media type
 	that can be resolved to an image URL.
@@ -7042,13 +7050,25 @@ TL.MediaType = function(m, image_only) {
 			// 	cls: 		TL.Media.Website
 			// },
 			{
+				type: 		"video",
+				name: 		"Video",
+				match_str: 	/(mp4)(\?.*)?$/i,
+				cls: 		TL.Media.Video
+			},
+			{
+				type: 		"audio",
+				name: 		"Audio",
+				match_str: 	/(mp3|wav|m4a)(\?.*)?$/i,
+				cls: 		TL.Media.Audio
+			},
+			{
 				type: 		"imageblank",
 				name: 		"Imageblank",
 				match_str: 	"",
 				cls: 		TL.Media.Image
 			}
 		];
-	
+
 	if(image_only) {
         if (m instanceof Array) {
             return false;
@@ -7064,12 +7084,12 @@ TL.MediaType = function(m, image_only) {
                         return media;
                     }
                     break;
-                
+
                 default:
-                    break;            
+                    break;
             }
-        }        
-	
+        }
+
 	} else {
         for (var i = 0; i < media_types.length; i++) {
             if (m instanceof Array) {
@@ -7156,11 +7176,11 @@ TL.Media = TL.Class.extend({
 		//Options
 		this.options = {
 			api_key_flickr: 		"f2cc870b4d233dd0a5bfe73fd0d64ef0",
-			api_key_googlemaps: 	"AIzaSyB9dW8e_iRrATFa8g24qB6BDBGdkrLDZYI",
+			api_key_googlemaps: "AIzaSyB9dW8e_iRrATFa8g24qB6BDBGdkrLDZYI",
 			api_key_embedly: 		"", // ae2da610d1454b66abdf2e6a4c44026d
 			credit_height: 			0,
 			caption_height: 		0,
-			background:             0   // is background media (for slide)
+			background:         0   // is background media (for slide)
 		};
 
 		this.animator = {};
@@ -7204,12 +7224,12 @@ TL.Media = TL.Class.extend({
 		}
 	},
 
-    _updateMessage: function(msg) {
-        if(this.message) {
-            this.message.updateMessage(msg);
-        }    
-    },
-    
+  _updateMessage: function(msg) {
+      if(this.message) {
+          this.message.updateMessage(msg);
+      }
+  },
+
 	loadingMessage: function() {
 	    this._updateMessage(this._('loading') + " " + this.options.media_name);
 	},
@@ -7257,7 +7277,7 @@ TL.Media = TL.Class.extend({
 
 	/*	Media Specific
 	================================================== */
-    _loadMedia: function() {        
+    _loadMedia: function() {
         // All overrides must call this.onLoaded() to set state
         this.onLoaded();
     },
@@ -7278,7 +7298,7 @@ TL.Media = TL.Class.extend({
         // Image-based media types should return <img>-compatible src url
         return "";
     },
-    
+
 	/*	Public
 	================================================== */
 	show: function() {
@@ -7299,10 +7319,10 @@ TL.Media = TL.Class.extend({
 		this.onRemove();
 	},
 
-    getImageURL: function(w, h) {
-        return this._getImageURL(w, h);
-    },
-    
+  getImageURL: function(w, h) {
+      return this._getImageURL(w, h);
+  },
+
 	// Update Display
 	updateDisplay: function(w, h, l) {
 		this._updateDisplay(w, h, l);
@@ -7689,6 +7709,18 @@ TL.Media.Flickr = TL.Media.extend({
 		// Photo
 		this._el.content_item = TL.Dom.create("img", "tl-media-item tl-media-image tl-media-flickr tl-media-shadow", this._el.content_link);
 
+		if (this.data.alt) {
+			this._el.content_item.alt = this.data.alt;
+		} else if (this.data.caption) {
+			this._el.content_item.alt = TL.Util.unhtmlify(this.data.caption);
+		}
+
+		if (this.data.title) {
+			this._el.content_item.title = this.data.title;
+		} else if (this.data.caption) {
+			this._el.content_item.title = TL.Util.unhtmlify(this.data.caption);
+		}
+
 		// Media Loaded Event
 		this._el.content_item.addEventListener('load', function(e) {
 			self.onMediaLoaded();
@@ -7915,7 +7947,7 @@ TL.Media.Image = TL.Media.extend({
         if(!this.options.background) {
             this.createMedia();
         }
-        
+
         // After loaded
 		this.onLoaded();
 	},
@@ -7923,11 +7955,11 @@ TL.Media.Image = TL.Media.extend({
     createMedia: function() {
         var self = this,
             image_class = "tl-media-item tl-media-image tl-media-shadow";
-        
+
 		if (this.data.url.match(/.png(\?.*)?$/) || this.data.url.match(/.svg(\?.*)?$/)) {
 			image_class = "tl-media-item tl-media-image"
 		}
-		
+
  		// Link
 		if (this.data.link) {
 			this._el.content_link 				= TL.Dom.create("a", "", this._el.content);
@@ -7937,7 +7969,19 @@ TL.Media.Image = TL.Media.extend({
 		} else {
 			this._el.content_item				= TL.Dom.create("img", image_class, this._el.content);
 		}
-		
+
+		if (this.data.alt) {
+			this._el.content_item.alt = this.data.alt;
+		} else if (this.data.caption) {
+			this._el.content_item.alt = TL.Util.unhtmlify(this.data.caption);
+		}
+
+		if (this.data.title) {
+			this._el.content_item.title = this.data.title;
+		} else if (this.data.caption) {
+			this._el.content_item.title = TL.Util.unhtmlify(this.data.caption);
+		}
+
 		// Media Loaded Event
 		this._el.content_item.addEventListener('load', function(e) {
 			self.onMediaLoaded();
@@ -7945,11 +7989,11 @@ TL.Media.Image = TL.Media.extend({
 
 		this._el.content_item.src			= this.getImageURL();
     },
-        
+
     getImageURL: function(w, h) {
         return TL.Util.transformImageURL(this.data.url);
     },
-    
+
 	_updateMediaDisplay: function(layout) {
 		if(TL.Browser.firefox) {
 			//this._el.content_item.style.maxWidth = (this.options.width/2) - 40 + "px";
@@ -7999,8 +8043,19 @@ TL.Media.Imgur = TL.Media.extend({
 		this._el.content_link.target 		= "_blank";
 
 		// Photo
-		this._el.content_item	= TL.Dom.create("img", "tl-media-item tl-media-image tl-media-imgur tl-media-shadow",
-																					this._el.content_link);
+		this._el.content_item	= TL.Dom.create("img", "tl-media-item tl-media-image tl-media-imgur tl-media-shadow", this._el.content_link);
+
+		if (this.data.alt) {
+			this._el.content_item.alt = this.data.alt;
+		} else if (this.data.caption) {
+			this._el.content_item.alt = TL.Util.unhtmlify(this.data.caption);
+		}
+
+		if (this.data.title) {
+			this._el.content_item.title = this.data.title;
+		} else if (this.data.caption) {
+			this._el.content_item.title = TL.Util.unhtmlify(this.data.caption);
+		}
 
 		// Media Loaded Event
 		this._el.content_item.addEventListener('load', function(e) {
@@ -8053,6 +8108,18 @@ TL.Media.Instagram = TL.Media.extend({
 
 		// Photo
 		this._el.content_item				= TL.Dom.create("img", "tl-media-item tl-media-image tl-media-instagram tl-media-shadow", this._el.content_link);
+
+		if (this.data.alt) {
+			this._el.content_item.alt = this.data.alt;
+		} else if (this.data.caption) {
+			this._el.content_item.alt = TL.Util.unhtmlify(this.data.caption);
+		}
+
+		if (this.data.title) {
+			this._el.content_item.title = this.data.title;
+		} else if (this.data.caption) {
+			this._el.content_item.title = TL.Util.unhtmlify(this.data.caption);
+		}
 
 		// Media Loaded Event
 		this._el.content_item.addEventListener('load', function(e) {
@@ -8435,16 +8502,23 @@ TL.Media.Spotify = TL.Media.extend({
 		this._el.content_item	= TL.Dom.create("div", "tl-media-item tl-media-iframe tl-media-spotify", this._el.content);
 
 		// Get Media ID
-		if (this.data.url.match(/^spotify:track/) || this.data.url.match(/^spotify:user:.+:playlist:/)) {
+		if (this.data.url.match(/^spotify:track/) || this.data.url.match(/^spotify:album/) || this.data.url.match(/^spotify:user:.+:playlist:/)) {
 			this.media_id = this.data.url;
 		}
-		if (this.data.url.match(/spotify.com\/track\/(.+)/)) {
-			this.media_id = "spotify:track:" + this.data.url.match(/spotify.com\/track\/(.+)/)[1];
-		} else if (this.data.url.match(/spotify.com\/user\/(.+?)\/playlist\/(.+)/)) {
-			var user = this.data.url.match(/spotify.com\/user\/(.+?)\/playlist\/(.+)/)[1];
-			var playlist = this.data.url.match(/spotify.com\/user\/(.+?)\/playlist\/(.+)/)[2];
+
+		if (this.data.url.match(/spotify\.com\/track\/(.+)/)) {
+			this.media_id = "spotify:track:" + this.data.url.match(/spotify\.com\/track\/(.+)/)[1];
+		} else if (this.data.url.match(/spotify\.com\/album\/(.+)/)) {
+			this.media_id = "spotify:album:" + this.data.url.match(/spotify\.com\/album\/(.+)/)[1];
+		} else if (this.data.url.match(/spotify\.com\/user\/(.+?)\/playlist\/(.+)/)) {
+			var user = this.data.url.match(/spotify\.com\/user\/(.+?)\/playlist\/(.+)/)[1];
+			var playlist = this.data.url.match(/spotify\.com\/user\/(.+?)\/playlist\/(.+)/)[2];
 			this.media_id = "spotify:user:" + user + ":playlist:" + playlist;
+		} else if (this.data.url.match(/spotify\.com\/artist\/(.+)/)) {
+			var artist = this.data.url.match(/spotify\.com\/artist\/(.+)/)[1];
+			this.media_id = "spotify:artist:" + artist;
 		}
+
 
 		if (this.media_id) {
 			// API URL
@@ -9352,6 +9426,168 @@ TL.Media.YouTube = TL.Media.extend({
 
 
 /* **********************************************
+     Begin TL.Media.Audio.js
+********************************************** */
+
+/*	TL.Media.Audio
+	Produces audio assets.
+	Takes a data object and populates a dom object
+================================================== */
+
+TL.Media.Audio = TL.Media.extend({
+
+	includes: [TL.Events],
+
+	/*	Load the media
+	================================================== */
+	_loadMedia: function() {
+		// Loading Message
+		this.loadingMessage();
+
+        // Create media?
+        if(!this.options.background) {
+            this.createMedia();
+        }
+
+        // After loaded
+		this.onLoaded();
+	},
+
+  createMedia: function() {
+    var self = this,
+        audio_class = "tl-media-item tl-media-audio tl-media-shadow";
+
+ 		// Link
+		if (this.data.link) {
+			this._el.content_link 				= TL.Dom.create("a", "", this._el.content);
+			this._el.content_link.href 		= this.data.link;
+			this._el.content_link.target 	= "_blank";
+			this._el.content_item					= TL.Dom.create("audio", audio_class, this._el.content_link);
+		} else {
+			this._el.content_item					= TL.Dom.create("audio", audio_class, this._el.content);
+		}
+
+		this._el.content_item.controls = true;
+		this._el.source_item = TL.Dom.create("source", "", this._el.content_item);
+
+		// Media Loaded Event
+		this._el.content_item.addEventListener('load', function(e) {
+			self.onMediaLoaded();
+		});
+
+		this._el.source_item.src = this.data.url;
+		this._el.source_item.type = this._getType(this.data.url, this.data.mediatype.match_str);
+		this._el.content_item.innerHTML += "Your browser doesn't support HTML5 audio with " + this._el.source_item.type;
+  },
+
+	_updateMediaDisplay: function(layout) {
+		if(TL.Browser.firefox) {
+			this._el.content_item.style.width = "auto";
+		}
+	},
+
+	_getType: function(url, reg) {
+		var ext = url.match(reg);
+		var type = "audio/"
+		switch(ext[1]) {
+			case "mp3":
+				type += "mpeg";
+				break;
+			case "wav":
+				type += "wav";
+				break;
+			case "m4a":
+				type += "mp4";
+				break;
+			default:
+				type = "audio";
+				break;
+		}
+		return type
+	}
+
+});
+
+
+/* **********************************************
+     Begin TL.Media.Video.js
+********************************************** */
+
+/*	TL.Media.Video
+	Produces video assets.
+	Takes a data object and populates a dom object
+================================================== */
+
+TL.Media.Video = TL.Media.extend({
+
+	includes: [TL.Events],
+
+	/*	Load the media
+	================================================== */
+	_loadMedia: function() {
+		// Loading Message
+		this.loadingMessage();
+
+        // Create media?
+        if(!this.options.background) {
+            this.createMedia();
+        }
+
+        // After loaded
+		this.onLoaded();
+	},
+
+  createMedia: function() {
+    var self = this,
+        video_class = "tl-media-item tl-media-video tl-media-shadow";
+
+ 		// Link
+		if (this.data.link) {
+			this._el.content_link 				= TL.Dom.create("a", "", this._el.content);
+			this._el.content_link.href 		= this.data.link;
+			this._el.content_link.target 	= "_blank";
+			this._el.content_item					= TL.Dom.create("video", video_class, this._el.content_link);
+		} else {
+			this._el.content_item					= TL.Dom.create("video", video_class, this._el.content);
+		}
+
+		this._el.content_item.controls = true;
+		this._el.source_item = TL.Dom.create("source", "", this._el.content_item);
+
+		// Media Loaded Event
+		this._el.content_item.addEventListener('load', function(e) {
+			self.onMediaLoaded();
+		});
+
+		this._el.source_item.src = this.data.url;
+		this._el.source_item.type = this._getType(this.data.url, this.data.mediatype.match_str);
+		this._el.content_item.innerHTML += "Your browser doesn't support HTML5 video with " + this._el.source_item.type;
+  },
+
+	_updateMediaDisplay: function(layout) {
+		if(TL.Browser.firefox) {
+			this._el.content_item.style.width = "auto";
+		}
+	},
+
+	_getType: function(url, reg) {
+		var ext = url.match(reg);
+		var type = "video/"
+		switch(ext[1]) {
+			case "mp4":
+				type += "mp4";
+				break;
+			default:
+				type = "video";
+				break;
+		}
+		return type
+	}
+
+});
+
+
+/* **********************************************
      Begin TL.Slide.js
 ********************************************** */
 
@@ -9485,12 +9721,12 @@ TL.Slide = TL.Class.extend({
 
 	loadMedia: function() {
         var self = this;
-        
+
 		if (this._media && !this._state.loaded) {
 			this._media.loadMedia();
 			this._state.loaded = true;
 		}
-		
+
 		if(this._background_media && !this._background_media._state.loaded) {
 		    this._background_media.on("loaded", function() {
 		        self._updateBackgroundDisplay();
@@ -9555,15 +9791,15 @@ TL.Slide = TL.Class.extend({
 		// Style Slide Background
 		if (this.data.background) {
 			if (this.data.background.url) {
-			    var media_type = TL.MediaType(this.data.background, true);
-			    if(media_type) {
-                    this._background_media = new media_type.cls(this.data.background, {background: 1});
-                
-                    this.has.background.image 					= true;
-                    this._el.container.className 				+= ' tl-full-image-background';
-                    this.has.background.color_value 			= "#000";
-                    this._el.background.style.display 			= "block";
-                }
+		    var media_type = TL.MediaType(this.data.background, true);
+		    if(media_type) {
+          this._background_media = new media_type.cls(this.data.background, {background: 1});
+
+          this.has.background.image 					= true;
+          this._el.container.className 				+= ' tl-full-image-background';
+          this.has.background.color_value 		= "#000";
+          this._el.background.style.display 	= "block";
+        }
 			}
 			if (this.data.background.color) {
 				this.has.background.color 					= true;
@@ -9594,16 +9830,14 @@ TL.Slide = TL.Class.extend({
 
 		// Create Media
 		if (this.has.media) {
-
 			// Determine the media type
-			this.data.media.mediatype 	= TL.MediaType(this.data.media);
+			this.data.media.mediatype = TL.MediaType(this.data.media);
 			this.options.media_name 	= this.data.media.mediatype.name;
 			this.options.media_type 	= this.data.media.mediatype.type;
-            this.options.autolink = this.data.autolink;
+      this.options.autolink 		= this.data.autolink;
 
 			// Create a media object using the matched class name
 			this._media = new this.data.media.mediatype.cls(this.data.media, this.options);
-
 		}
 
 		// Create Text
@@ -9691,10 +9925,10 @@ TL.Slide = TL.Class.extend({
 				this._media.updateDisplay(content_width/2, this.options.height, layout);
 			}
 		}
-		
+
 		this._updateBackgroundDisplay();
 	},
-	
+
 	_updateBackgroundDisplay: function() {
 	    if(this._background_media && this._background_media._state.loaded) {
 	        this._el.background.style.backgroundImage 	= "url('" + this._background_media.getImageURL(this.options.width, this.options.height) + "')";
@@ -12615,6 +12849,8 @@ https://incident57.com/codekit/
 	// @codekit-prepend "media/types/TL.Media.Website.js";
 	// @codekit-prepend "media/types/TL.Media.Wikipedia.js";
 	// @codekit-prepend "media/types/TL.Media.YouTube.js";
+	// @codekit-prepend "media/types/TL.Media.Audio.js";
+	// @codekit-prepend "media/types/TL.Media.Video.js";
 
 // STORYSLIDER
 	// @codekit-prepend "slider/TL.Slide.js";
@@ -12758,6 +12994,25 @@ TL.Timeline = TL.Class.extend({
 		if (this.options.is_full_embed) {
 			TL.DomUtil.addClass(this._el.container, 'tl-timeline-full-embed');
 		}
+
+		document.addEventListener("keydown", function(event) {
+			var keyName = event.key;
+			var currentSlide = self._getSlideIndex(self.current_id);
+			var _n = self.config.events.length - 1;
+			var lastSlide = self.config.title ? _n + 1 : _n;
+			var firstSlide = 0;
+
+			if (keyName == 'ArrowLeft'){
+				if (currentSlide!=firstSlide){
+					self.goToPrev();
+				}
+			}
+			else if (keyName == 'ArrowRight'){
+				if (currentSlide!=lastSlide){
+					self.goToNext();
+				}
+			}
+		});
 
 		// Use Relative Date Calculations
 		// NOT YET IMPLEMENTED
